@@ -7,11 +7,16 @@ const MainLayout = ({
         children: React.ReactNode;
     }>) => {
   return (
-    <div>
+    <div className='bg-gray-500 w-full min-h-screen'>
         <MainHeader></MainHeader>
-        <h1>Main layout</h1>
-        <hr />
-        {children}
+        <div className="flex justify-between">
+            {/* flex-1 class below helps to grow a box to fit remaining size */}
+            <main className='bg-gray-700 flex-1'>{children}</main> 
+
+            <aside className='bg-blue-700'>
+                <h1>Aside layout</h1>
+            </aside>
+        </div>
     </div>
   )
 }

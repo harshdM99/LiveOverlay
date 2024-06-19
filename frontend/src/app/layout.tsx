@@ -1,9 +1,6 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
-import MainLayout from "@/components/MainLayout";
-
-const inter = Inter({ subsets: ["latin"] });
+import MainHeader from '@/components/MainHeader';
 
 export const metadata: Metadata = {
   title: "LiveOverlay App",
@@ -17,8 +14,16 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>
-        <MainLayout>{children}</MainLayout>
+      <body className='bg-gray-500 w-full min-h-screen'>
+        <MainHeader></MainHeader>
+        <div className="flex justify-between">
+            {/* flex-1 class below helps to grow a box to fit remaining size */}
+            <main className='bg-gray-700 flex-1'>{children}</main> 
+
+            <aside className='bg-blue-700'>
+                <h1>Aside layout</h1>
+            </aside>
+        </div>
       </body>
     </html>
   );

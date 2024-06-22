@@ -19,7 +19,7 @@ export default function RootLayout({
         <div className="flex justify-between">
             {/* flex-1 class below helps to grow a box to fit remaining size */}
             <main className='bg-gray-700 flex-1'>{children}</main> 
-
+    
             <aside className='bg-blue-700'>
                 <h1>Aside layout</h1>
             </aside>

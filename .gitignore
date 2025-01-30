@@ -1,3 +1,13 @@
-node_modules
-# Keep environment variables out of version control
-.env
+# Temprary files
+backend
+frontend
+
+# Node modules (dependencies)
+node_modules/
+npm-debug.log
+yarn.lock
+pnpm-lock.yaml
+
+# Dependencies and lock files
+yarn.lock
+pnpm-lock.yaml

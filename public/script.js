@@ -2,6 +2,7 @@ const userVideo = document.getElementById("user-video");
 const streamButton = document.getElementById("stream-button");
 
 const state = {media: null};
+const socket = io();
 
 window.addEventListener("load", async e => {
     try {
@@ -23,8 +24,9 @@ streamButton.addEventListener("click", () => {
         frameRate: 25
     })
 
-    mediaBinaryData.ondataavailable = e => {
-        console.log("Binary stream available", e.data);
+    mediaBinaryData.ondataavailable = event => {
+        console.log("Binary stream available", event.data);
+        socket.emit("binaryStream", event.data);
     }
 
     mediaBinaryData.start(25);

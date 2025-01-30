@@ -6,16 +6,16 @@ function main() {
   const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
-    navigator.mediaDevices.getUserMedia({video: true}).then( stream => {
-      
-      if(videoRef.current) {
-          let video = videoRef.current;
-          video.srcObject = stream;
-          video.play();
-        }
-      }).catch(err => {
-        console.log("Stream error : ", err);
-      })
+    navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {
+
+      if (videoRef.current) {
+        let video = videoRef.current;
+        video.srcObject = stream;
+        video.play();
+      }
+    }).catch(err => {
+      console.log("Stream error : ", err);
+    })
   });
 
   return (
@@ -23,6 +23,7 @@ function main() {
       <h1>main Page</h1>
       <div className='App'>
         <video ref={videoRef} id="webcamVideo" autoPlay playsInline></video>
+
         {/* <video id="webcamVideo" autoPlay playsInline></video> */}
       </div>
     </main>

@@ -11,3 +11,6 @@ pnpm-lock.yaml
 # Dependencies and lock files
 yarn.lock
 pnpm-lock.yaml
+
+# env file
+.env

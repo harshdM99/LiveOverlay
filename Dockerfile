@@ -10,6 +10,6 @@ RUN /usr/bin/apt-get update && \
 WORKDIR /home/app
 
 RUN npm install -g nodemon
-RUN npm add express socket.io 
+RUN npm add express socket.io dotenv
 
 CMD nodemon index.js

@@ -3,10 +3,13 @@ import path from 'path';
 import express from 'express';
 import { spawn } from 'child_process';
 import {Server as SocketIoServer} from 'socket.io';
+import 'dotenv/config';
 
 const app = express();
 const server = http.createServer(app);
 const io = new SocketIoServer(server);
+
+const twitchApiKey = process.env.API_KEY_TWITCH_1
 
 const options = [
     '-i',
@@ -17,7 +20,7 @@ const options = [
     '-r', `${25}`,
     '-g', `${25 * 2}`,
     '-keyint_min', 25,
-    '-crf', '25',
+    '-crf', '25',   
     '-pix_fmt', 'yuv420p',
     '-sc_threshold', '0',
     '-profile:v', 'main',
@@ -26,7 +29,8 @@ const options = [
     '-b:a', '128k',
     '-ar', 128000 / 4,
     '-f', 'flv',
-    `rtmp://a.rtmp.youtube.com/live2/`,
+    // `rtmp://a.rtmp.youtube.com/live2/`,
+    `rtmp://live.twitch.tv/app/${twitchApiKey}`
 ];
 
 const ffmpegProcess = spawn('ffmpeg', options);
@@ -47,10 +51,20 @@ io.on('connection', socket => {
     console.log("Socket connection with frontend established!");
 
     socket.on("binaryStream", stream => {
-        console.log("Binary Stream incoming....");
+        // console.log("Binary Stream incoming....");
         ffmpegProcess.stdin.write(stream, (err)=> {
-            console.log("Error : ", err);
+            // console.log("Error : ", err);
         });
+    });
+
+    socket.on("stopStream", () => {
+        console.log("Stopping Stream");
+
+        if(ffmpegProcess) {
+            ffmpegProcess.stdin.end();
+            ffmpegProcess.kill('SIGINT');
+            ffmpegProcess = null;
+        }
     });
 });
 

@@ -31,11 +31,26 @@ const options = [
 
 const ffmpegProcess = spawn('ffmpeg', options);
 
+ffmpegProcess.stdout.on("data", (data) => {
+    console.log(`ffmpeg stdout : ${data}`);
+});
+
+ffmpegProcess.stderr.on('data', (data) => {
+    console.log(`ffmpeg stderr: ${data}`);
+});
+
+ffmpegProcess.on('close', (code)=>{
+    console.log(`ffmpeg process exited with code: ${code}`);
+});
+
 io.on('connection', socket => {
     console.log("Socket connection with frontend established!");
 
     socket.on("binaryStream", stream => {
         console.log("Binary Stream incoming....");
+        ffmpegProcess.stdin.write(stream, (err)=> {
+            console.log("Error : ", err);
+        });
     });
 });
 

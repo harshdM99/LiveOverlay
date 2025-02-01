@@ -1,13 +1,19 @@
 import http from 'http';
 import path from 'path';
 import express from 'express';
+import cors from 'cors';
 import { spawn } from 'child_process';
 import {Server as SocketIoServer} from 'socket.io';
 import 'dotenv/config';
 
 const app = express();
 const server = http.createServer(app);
-const io = new SocketIoServer(server);
+const io = new SocketIoServer(server,  {
+    cors: {
+      origin: "http://localhost:5173",  // Allow frontend origin
+      methods: ["GET", "POST"]
+    }
+});
 
 const twitchApiKey = process.env.API_KEY_TWITCH_1
 
@@ -67,7 +73,5 @@ io.on('connection', socket => {
         }
     });
 });
-
-app.use(express.static(path.resolve('./public')));
 
 server.listen(3000, () => console.log('Server running on port 3000'));

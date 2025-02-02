@@ -63,6 +63,16 @@ io.on('connection', socket => {
         });
     });
 
+    socket.on("startStream", () => {
+        const twitchChannel = "ladladme"; // Replace with actual Twitch username
+        const twitchUrl = `https://www.twitch.tv/${twitchChannel}`;
+
+        console.log(`🚀 Streaming started! Watch live at: ${twitchUrl}`);
+
+        // Send the Twitch URL to the frontend
+        socket.emit("twitchUrl", twitchUrl);
+    });
+
     socket.on("stopStream", () => {
         console.log("Stopping Stream");
 

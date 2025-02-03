@@ -15,7 +15,8 @@ const io = new SocketIoServer(server,  {
     }
 });
 
-const twitchApiKey = process.env.API_KEY_TWITCH_1
+const twitchApiKey = process.env.API_KEY_TWITCH_1;
+const twitchChannel = process.env.CHANNEL_NAME;
 
 const options = [
     '-i',
@@ -64,7 +65,6 @@ io.on('connection', socket => {
     });
 
     socket.on("startStream", () => {
-        const twitchChannel = "ladladme"; // Replace with actual Twitch username
         const twitchUrl = `https://www.twitch.tv/${twitchChannel}`;
 
         console.log(`🚀 Streaming started! Watch live at: ${twitchUrl}`);

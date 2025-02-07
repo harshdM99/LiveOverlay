@@ -78,7 +78,7 @@ io.on('connection', socket => {
 
         if(ffmpegProcess) {
             ffmpegProcess.stdin.end();
-            ffmpegProcess.kill('SIGINT');
+            ffmpegProcess.kill('SIGTERM');
             ffmpegProcess = null;
         }
     });

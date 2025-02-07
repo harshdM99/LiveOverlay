@@ -16,23 +16,24 @@ function App() {
   const [isTextOverlayEnabled, setIsTextOverlayEnabled] = useState(false); // ✅ Toggle for text overlay
   const [cameraDenied, setCameraDenied] = useState(false); // ✅ Track camera access
 
-  // const socket = io("http://localhost:3000");
-  async function getUserMedia() {
-    try {
-      const mediaStream = await navigator.mediaDevices.getUserMedia({
-        video: true,
-        audio: true,
-      });
-      videoRef.current.srcObject = mediaStream;
-      setStream(mediaStream);
-      setCameraDenied(false); // ✅ Reset if access is granted
-    } catch (error) {
-      console.error("Error accessing media devices:", error);
-      setCameraDenied(true); // ✅ Detect when permission is denied
-    }
-  }
+  const socket = io("http://localhost:3000");
 
   useEffect(() => {
+    async function getUserMedia() {
+      try {
+        const mediaStream = await navigator.mediaDevices.getUserMedia({
+          video: true,
+          audio: true,
+        });
+        videoRef.current.srcObject = mediaStream;
+        setStream(mediaStream);
+        setCameraDenied(false); // ✅ Reset if access is granted
+      } catch (error) {
+        console.error("Error accessing media devices:", error);
+        setCameraDenied(true); // ✅ Detect when permission is denied
+      }
+    }
+
     getUserMedia();
   }, []);
 
@@ -207,16 +208,19 @@ function App() {
   const stopStreaming = () => {
     if (mediaRecorderRef.current) {
       mediaRecorderRef.current.stop();
+      setTwitchUrl(null); // ✅ Hide the Twitch URL after stopping
       console.log("Streaming stopped...");
     }
   };
 
   return (
-    <div className="flex justify-around h-screen bg-gray-900 text-white ">
+    // <div className="flex justify-around h-screen bg-gray-900 text-white ">
+    <div className="flex items-center justify-around h-screen bg-gray-900 text-white overflow-y-auto">
+
       {/* Left Section - Main Canvas Display */}
       <div className="flex flex-col items-center justify-center relative">
         {/* Title */}
-        <h1 className="absolute top-4 text-3xl font-bold">Studio</h1>
+        <h1 className="top-4 text-3xl mb-6 font-bold w-full text-center">Streaming Studio</h1>
 
         {/* Main Canvas - Reduced Size & Shifted Left */}
         <canvas ref={canvasRef} width={680} height={360} className="border border-gray-500 w-[680px] h-[360px]"></canvas>
@@ -230,24 +234,33 @@ function App() {
           </button>
         </div>
         
-        {twitchUrl && (
+        {/* {twitchUrl && (
           <div className="mt-4">
             <p className="text-lg">🔴 Streaming Live on twitch:</p>
             <a href={twitchUrl} target="_blank" rel="noopener noreferrer" className="text-blue-400 underline">
               {twitchUrl}
             </a>
           </div>
-        )}
+        )} */}
+
+        {twitchUrl && (
+          <div className="mt-12 p-3 bg-gray-800 rounded text-center w-[90%] max-w-3xl">
+            <p className="text-lg">🔴 Streaming Live on Twitch:</p>
+            <a href={twitchUrl} target="_blank" rel="noopener noreferrer" className="text-blue-400 underline break-all">
+              {twitchUrl}
+            </a>
+          </div>
+)}
       </div>
 
 {/* Right Panel - Side-by-Side Source & Overlay Sections */}
-<div className="w-1/3 p-4 bg-gray-800 flex flex-row justify-between h-full gap-4">
+<div className="w-1/3 p-4 bg-gray-800 flex flex-row justify-between min-h-screen gap-4 overflow-y-auto">
 
   {/* 🎥 Source Selection Section */}
   <div className="w-1/2 flex flex-col items-center space-y-4">
     <h2 className="text-lg font-bold mb-10">Select Source</h2>
 
-    <div className="relative w-36 h-20 border border-gray-500 mb-4 cursor-pointer" onClick={getUserMedia}>
+    <div className="relative w-36 h-20 border border-gray-500 mb-4 cursor-pointer">
       {/* Show video if access is granted */}
       {!cameraDenied ? (
         <video

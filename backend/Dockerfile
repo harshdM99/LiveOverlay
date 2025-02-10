@@ -11,5 +11,6 @@ WORKDIR /home/app
 
 RUN npm install -g nodemon
 RUN npm add express socket.io dotenv
+RUN npm install jsonwebtoken cookie-parser
 
 CMD nodemon index.js

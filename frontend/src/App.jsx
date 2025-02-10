@@ -218,9 +218,9 @@ function App() {
     <div className="flex items-center justify-around h-screen bg-gray-900 text-white overflow-y-auto">
 
       {/* Left Section - Main Canvas Display */}
-      <div className="flex flex-col items-center justify-center relative">
+      <div className="flex flex-col items-center justify-center ">
         {/* Title */}
-        <h1 className="top-4 text-3xl mb-6 font-bold w-full text-center">Streaming Studio</h1>
+        <h1 className="top-4 text-3xl mb-6 font-bold w-full h-full text-center">Streaming Studio</h1>
 
         {/* Main Canvas - Reduced Size & Shifted Left */}
         <canvas ref={canvasRef} width={680} height={360} className="border border-gray-500 w-[680px] h-[360px]"></canvas>

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import io from "socket.io-client";
 import "./App.css"; // Future CSS file
 
@@ -6,6 +7,8 @@ function App() {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const mediaRecorderRef = useRef(null);
+  // const selectedAccount = localStorage.getItem("selectedTwitchAccount");
+  const navigate = useNavigate();
   
   const [selectedSource, setSelectedSource] = useState("/welcome.jpg"); // Default Image
   const [screenStream, setScreenStream] = useState(null); // Store screen stream
@@ -18,6 +21,46 @@ function App() {
 
   const socket = io("http://localhost:3000");
 
+  useEffect(() => {
+    fetch("http://localhost:3000/verify-session", { credentials: "include" })
+      .then(res => res.json())
+      .then(data => {
+        if (!data.success) {
+          navigate("/login");
+        }
+      })
+      .catch(() => navigate("/login"));
+  }, [navigate]);
+
+  const handleLogout = () => {
+    fetch("http://localhost:3000/logout", { 
+      method: "POST",
+      credentials: "include"
+    })
+      .then(res => res.json())
+      .then(() => {
+        window.location.href = "/login"; // ✅ Redirect after logout
+      })
+      .catch(error => console.error("Logout failed:", error));
+  };
+
+  // useEffect(() => {
+  //   const handleTabClose = (event) => {
+  //     if (document.visibilityState === "hidden") {
+  //       fetch("http://localhost:3000/logout", {
+  //         method: "POST",
+  //         credentials: "include"
+  //       });
+  //     }
+  //   };
+  
+  //   document.addEventListener("visibilitychange", handleTabClose);
+  
+  //   return () => {
+  //     document.removeEventListener("visibilitychange", handleTabClose);
+  //   };
+  // }, []);
+  
   useEffect(() => {
     async function getUserMedia() {
       try {
@@ -341,6 +384,12 @@ function App() {
       onClick={() => setIsTextOverlayEnabled((prev) => !prev)}
     >
       {isTextOverlayEnabled ? "Disable Text Overlay" : "Enable Text Overlay"}
+    </button>
+
+    <button 
+      onClick={handleLogout} 
+      className="mt-4 px-6 py-2 bg-red-500 text-white rounded">
+      Logout
     </button>
 
   </div>

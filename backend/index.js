@@ -7,6 +7,7 @@ import {Server as SocketIoServer} from 'socket.io';
 import cookieParser from "cookie-parser";
 import jwt from "jsonwebtoken";
 import 'dotenv/config';
+import { exec } from "child_process";
 
 const app = express();
 const server = http.createServer(app);
@@ -30,7 +31,9 @@ app.use(cors({
 app.use(express.json());
 app.use(cookieParser());
 
-const JWT_SECRET = process.env.JWT_SECRET || "your_secret_key";
+// TODO: add appropriate
+const JWT_SECRET = process.env.JWT_SECRET || "temp_secret_key";
+const activeStreams = {};
 
 const twitchAccounts = [
     { username: process.env.TWITCH_USER_1, apiKey: process.env.API_KEY_TWITCH_1, id: "twitch_1", available: true },
@@ -85,6 +88,10 @@ app.post("/logout", authenticateUser, (req, res) => {
         account.available = true; // Release the account
     }
 
+    if (activeStreams[accountId]) {
+        stopStream(accountId);
+    }
+
     res.clearCookie("jwt"); // ✅ Remove session token
     return res.json({ success: true, message: "Logged out successfully" });
 });
@@ -94,72 +101,111 @@ app.get("/verify-session", authenticateUser, (req, res) => {
     return res.json({ success: true, username: req.user.username });
 });
 
-const twitchApiKey = process.env.API_KEY_TWITCH_1;
-const twitchChannel = process.env.CHANNEL_NAME;
+// OLD FOR SINGLE STREAM & USER
+// const twitchApiKey = process.env.API_KEY_TWITCH_1;
+// const twitchChannel = process.env.CHANNEL_NAME;
 
-const options = [
-    '-i',
-    '-',
-    '-c:v', 'libx264',
-    '-preset', 'ultrafast',
-    '-tune', 'zerolatency',
-    '-r', `${25}`,
-    '-g', `${25 * 2}`,
-    '-keyint_min', 25,
-    '-crf', '25',   
-    '-pix_fmt', 'yuv420p',
-    '-sc_threshold', '0',
-    '-profile:v', 'main',
-    '-level', '3.1',
-    '-c:a', 'aac',
-    '-b:a', '128k',
-    '-ar', 128000 / 4,
-    '-f', 'flv',
-    // `rtmp://a.rtmp.youtube.com/live2/`,
-    `rtmp://live.twitch.tv/app/${twitchApiKey}`
-];
+// const options = [
+//     '-i',
+//     '-',
+//     '-c:v', 'libx264',
+//     '-preset', 'ultrafast',
+//     '-tune', 'zerolatency',
+//     '-r', `${25}`,
+//     '-g', `${25 * 2}`,
+//     '-keyint_min', 25,
+//     '-crf', '25',   
+//     '-pix_fmt', 'yuv420p',
+//     '-sc_threshold', '0',
+//     '-profile:v', 'main',
+//     '-level', '3.1',
+//     '-c:a', 'aac',
+//     '-b:a', '128k',
+//     '-ar', 128000 / 4,
+//     '-f', 'flv',
+//     // `rtmp://a.rtmp.youtube.com/live2/`,
+//     `rtmp://live.twitch.tv/app/${twitchApiKey}`
+// ];
 
-const ffmpegProcess = spawn('ffmpeg', options);
+// const ffmpegProcess = spawn('ffmpeg', options);
 
-ffmpegProcess.stdout.on("data", (data) => {
-    console.log(`ffmpeg stdout : ${data}`);
-});
+// ffmpegProcess.stdout.on("data", (data) => {
+//     console.log(`ffmpeg stdout : ${data}`);
+// });
 
-ffmpegProcess.stderr.on('data', (data) => {
-    console.log(`ffmpeg stderr: ${data}`);
-});
+// ffmpegProcess.stderr.on('data', (data) => {
+//     console.log(`ffmpeg stderr: ${data}`);
+// });
 
-ffmpegProcess.on('close', (code)=>{
-    console.log(`ffmpeg process exited with code: ${code}`);
-});
+// ffmpegProcess.on('close', (code)=>{
+//     console.log(`ffmpeg process exited with code: ${code}`);
+// });
+
+const studios = {};
+const startStream = (accountId) => {
+    const account = twitchAccounts.find(acc => acc.id === accountId);
+    if (!account) return null;
+  
+    const containerName = `stream_${accountId}`;
+    
+    // ✅ Spawn a separate `ffmpeg` process for each user
+    const ffmpegProcess = spawn("ffmpeg", [
+        "-i", "-", "-c:v", "libx264", "-preset", "ultrafast", "-tune", "zerolatency",
+        "-r", "25", "-g", "50", "-keyint_min", "25", "-crf", "30", "-pix_fmt", "yuv420p",
+        "-sc_threshold", "0", "-profile:v", "main", "-level", "3.1", "-vf", "scale=854:480",
+        "-b:v", "1M", "-maxrate", "1M", "-bufsize", "2M", "-c:a", "aac", "-b:a", "128k",
+        "-ar", "44100", "-f", "flv", `rtmp://live.twitch.tv/app/${account.apiKey}`
+    ], { stdio: ["pipe", "ignore", "ignore"] });
+
+    activeStreams[accountId] = ffmpegProcess; // ✅ Track process per user
+
+    // ✅ Auto-stop after 10 minutes
+    setTimeout(() => {
+        console.log(`⏳ Auto-stopping stream for ${account.username} after 10 minutes.`);
+        stopStream(accountId);
+    }, 10 * 60 * 1000);
+
+    return `https://www.twitch.tv/${account.username}`;
+};
+    
+// ✅ Stop Streaming & Remove Container
+const stopStream = (accountId) => {
+    if (!activeStreams[accountId]) return;
+  
+    console.log(`🛑 Stopping ffmpeg process for ${accountId}...`);
+    activeStreams[accountId].stdin.end();
+    activeStreams[accountId].kill("SIGTERM");
+    delete activeStreams[accountId];
+  };
+  
 
 io.on('connection', socket => {
     console.log("Socket connection with frontend established!");
 
-    socket.on("binaryStream", stream => {
-        // console.log("Binary Stream incoming....");
-        ffmpegProcess.stdin.write(stream, (err)=> {
-            // console.log("Error : ", err);
-        });
+    socket.on("binaryStream", (accountId, streamData) => {
+        if (activeStreams[accountId]) {
+            activeStreams[accountId].stdin.write(streamData); // ✅ Pass binary data to ffmpeg
+        }
     });
 
-    socket.on("startStream", () => {
-        const twitchUrl = `https://www.twitch.tv/${twitchChannel}`;
+    socket.on("startStream", (accountId) => {
+        const twitchUrl = startStream(accountId);
 
-        console.log(`🚀 Streaming started! Watch live at: ${twitchUrl}`);
+        console.log(`🎥 Starting stream for ${accountId}`);
 
         // Send the Twitch URL to the frontend
         socket.emit("twitchUrl", twitchUrl);
     });
 
-    socket.on("stopStream", () => {
+    socket.on("stopStream", (accountId) => {
         console.log("Stopping Stream");
 
-        if(ffmpegProcess) {
-            ffmpegProcess.stdin.end();
-            ffmpegProcess.kill('SIGTERM');
-            ffmpegProcess = null;
-        }
+        stopStream(accountId);
+        // if(ffmpegProcess) {
+        //     ffmpegProcess.stdin.end();
+        //     ffmpegProcess.kill('SIGTERM');
+        //     ffmpegProcess = null;
+        // }
     });
 });
 

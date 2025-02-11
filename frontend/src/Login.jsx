@@ -39,6 +39,7 @@ function Login() {
       .then(res => res.json())
       .then(data => {
         if (data.success) {
+          localStorage.setItem("selectedTwitchAccount", selectedAccount);
           navigate("/app"); // Redirect to app
         } else {
           alert(data.message);

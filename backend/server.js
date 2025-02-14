@@ -108,7 +108,7 @@ app.post("/login", (req, res) => {
 
     res.cookie("jwt", token, {
       httpOnly: true, // ✅ More secure, can't be accessed by JavaScript
-      secure: false, // Change to `true` if using HTTPS
+      secure: true, // Change to `true` if using HTTPS
       maxAge: 60 * 60 * 1000, // 1 hours
     });
 
@@ -142,7 +142,23 @@ app.post("/logout", authenticateUser, (req, res) => {
 
 // ✅ Protect App Route (Ensures Only Logged-In Users Can Access)
 app.get("/verify-session", authenticateUser, (req, res) => {
-  return res.json({ success: true, username: req.user.username });
+  // return res.json({ success: true, username: req.user.username });
+
+  console.log("Cookies received:", req.cookies); // ✅ Log cookies
+  console.log("JWT Token:", req.cookies.jwt); // ✅ Check if token exists
+
+  if (!req.cookies.jwt) {
+    return res.status(401).json({ success: false, message: "No token found" });
+  }
+
+  try {
+    const decoded = jwt.verify(req.cookies.jwt, JWT_SECRET);
+    console.log("Decoded User:", decoded);
+    return res.json({ success: true, username: decoded.username });
+  } catch (error) {
+    console.error("JWT Verification Error:", error);
+    return res.status(403).json({ success: false, message: "Invalid session" });
+  }
 });
 
 app.get("/keep-alive", (req, res) => {

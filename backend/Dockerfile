@@ -10,7 +10,7 @@ RUN /usr/bin/apt-get update && \
 WORKDIR /home/app
 
 RUN npm install -g nodemon
-RUN npm add express socket.io dotenv
-RUN npm install jsonwebtoken cookie-parser
+RUN npm add express socket.io dotenv jsonwebtoken cookie-parser
+RUN npm install
 
 CMD nodemon index.js

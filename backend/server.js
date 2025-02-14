@@ -18,16 +18,17 @@ const io = new SocketIoServer(server, {
   cors: {
     origin: allowedOrigins, // Allow frontend origin
     methods: ["GET", "POST"],
+    credentials: true,
   },
 });
 
-// app.use(
-//   cors({
-//     origin: allowedOrigins,
-//     methods: ["GET", "POST"],
-//     credentials: true,
-//   })
-// );
+app.use(
+  cors({
+    origin: allowedOrigins,
+    methods: ["GET", "POST"],
+    credentials: true,
+  })
+);
 
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", req.headers.origin);

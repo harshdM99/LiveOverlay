@@ -25,7 +25,11 @@ function App() {
   const socket = io(API_BASE_URL);
 
   useEffect(() => {
-    fetch(API_BASE_URL+"/verify-session", { credentials: "include" })
+    fetch(API_BASE_URL+"/verify-session", { 
+      method: "GET",
+      credentials: "include", // ✅ Ensures cookies are sent
+      headers: { "Content-Type": "application/json" } 
+    })
       .then(res => res.json())
       .then(data => {
         if (!data.success) {

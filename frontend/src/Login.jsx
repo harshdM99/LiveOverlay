@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { API_BASE_URL } from "./config";
 
 function Login() {
   const navigate = useNavigate();
@@ -7,7 +8,7 @@ function Login() {
   const [selectedAccount, setSelectedAccount] = useState(null);
 
   useEffect(() => {
-    fetch("http://localhost:3000/verify-session", { credentials: "include" })
+    fetch(API_BASE_URL+"/verify-session", { credentials: "include" })
       .then(res => res.json())
       .then(data => {
         if (data.success) {
@@ -18,7 +19,7 @@ function Login() {
   }, [navigate]);
 
   useEffect(() => {
-    fetch("http://localhost:3000/available-accounts", { credentials: "include" })
+    fetch(API_BASE_URL+"/available-accounts", { credentials: "include" })
       .then(res => res.json())
       .then(data => setAvailableAccounts(data))
       .catch(error => console.error("Error fetching accounts:", error));
@@ -30,7 +31,7 @@ function Login() {
       return;
     }
 
-    fetch("http://localhost:3000/login", {
+    fetch(API_BASE_URL+"/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       credentials: "include",

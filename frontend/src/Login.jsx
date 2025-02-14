@@ -8,17 +8,6 @@ function Login() {
   const [selectedAccount, setSelectedAccount] = useState(null);
 
   useEffect(() => {
-    fetch(API_BASE_URL+"/verify-session", { credentials: "include" })
-      .then(res => res.json())
-      .then(data => {
-        if (data.success) {
-          navigate("/app"); // ✅ Redirect if already logged in
-        }
-      })
-      .catch(() => {}); // No action needed if not logged in
-  }, [navigate]);
-
-  useEffect(() => {
     fetch(API_BASE_URL+"/available-accounts", { credentials: "include" })
       .then(res => res.json())
       .then(data => setAvailableAccounts(data))

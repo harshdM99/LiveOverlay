@@ -11,8 +11,8 @@ const app = express();
 const server = http.createServer(app);
 
 const allowedOrigins = [
-  "http://localhost:5173", // ✅ Local development
-  "https://overlay-c73d0.web.app/", // ✅ Future cloud deployment
+  "http://localhost:5173",
+  "https://liveoverlay-frontend.onrender.com",
 ];
 const io = new SocketIoServer(server, {
   cors: {

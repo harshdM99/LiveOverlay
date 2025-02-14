@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import io from "socket.io-client";
 import "./App.css"; // Future CSS file
+import { API_BASE_URL } from "./config";
 
 function App() {
   const videoRef = useRef(null);
@@ -21,10 +22,10 @@ function App() {
 
   const accountId = localStorage.getItem("selectedTwitchAccount");
 
-  const socket = io("http://localhost:3000");
+  const socket = io(API_BASE_URL);
 
   useEffect(() => {
-    fetch("http://localhost:3000/verify-session", { credentials: "include" })
+    fetch(API_BASE_URL+"/verify-session", { credentials: "include" })
       .then(res => res.json())
       .then(data => {
         if (!data.success) {
@@ -35,7 +36,7 @@ function App() {
   }, [navigate]);
 
   const handleLogout = () => {
-    fetch("http://localhost:3000/logout", { 
+    fetch(API_BASE_URL+"/logout", { 
       method: "POST",
       credentials: "include"
     })

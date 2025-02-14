@@ -144,6 +144,10 @@ app.get("/verify-session", authenticateUser, (req, res) => {
   return res.json({ success: true, username: req.user.username });
 });
 
+app.get("/keep-alive", (req, res) => {
+  res.status(200).send("Server is active");
+});
+
 // OLD FOR SINGLE STREAM & USER
 // const twitchApiKey = process.env.API_KEY_TWITCH_1;
 // const twitchChannel = process.env.CHANNEL_NAME;

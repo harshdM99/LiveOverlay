@@ -143,11 +143,6 @@ app.post("/logout", authenticateUser, (req, res) => {
 
 // ✅ Protect App Route (Ensures Only Logged-In Users Can Access)
 app.get("/verify-session", (req, res) => {
-  // return res.json({ success: true, username: req.user.username });
-
-  console.log("Cookies received:", req.cookies); // ✅ Log cookies
-  console.log("JWT Token:", req.cookies.jwt); // ✅ Check if token exists
-
   if (!req.cookies.jwt) {
     return res.status(401).json({ success: false, message: "No token found" });
   }

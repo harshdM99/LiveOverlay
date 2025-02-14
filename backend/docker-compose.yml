@@ -1,0 +1,10 @@
+services:
+  app:
+    build: 
+      context: .
+      dockerfile: ./Dockerfile
+    volumes:
+      - ./:/home/app
+      - /home/app/node_modules # make sure our installations inside container are not overwritten
+    ports:
+      - 3000:3000

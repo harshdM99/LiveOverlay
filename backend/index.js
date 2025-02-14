@@ -11,17 +11,17 @@ import { exec } from "child_process";
 
 const app = express();
 const server = http.createServer(app);
-const io = new SocketIoServer(server,  {
-    cors: {
-      origin: "http://localhost:5173",  // Allow frontend origin
-      methods: ["GET", "POST"]
-    }
-});
 
 const allowedOrigins = [
     "http://localhost:5173", // ✅ Local development
-    "https://yourdomain.com", // ✅ Future cloud deployment
+    "https://overlay-c73d0.web.app/", // ✅ Future cloud deployment
 ];
+const io = new SocketIoServer(server,  {
+    cors: {
+      origin: allowedOrigins,  // Allow frontend origin
+      methods: ["GET", "POST"]
+    }
+});
 
 app.use(cors({
     origin: allowedOrigins,
@@ -184,7 +184,11 @@ io.on('connection', socket => {
 
     socket.on("binaryStream", (accountId, streamData) => {
         if (activeStreams[accountId]) {
-            activeStreams[accountId].stdin.write(streamData); // ✅ Pass binary data to ffmpeg
+            try {
+                activeStreams[accountId].stdin.write(streamData);
+            } catch (error) {
+                console.error("❌ Failed to write to ffmpeg process:", error);
+            }
         }
     });
 
@@ -209,4 +213,5 @@ io.on('connection', socket => {
     });
 });
 
-server.listen(3000, () => console.log('Server running on port 3000'));
+const PORT = process.env.PORT || 3000;
+server.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));

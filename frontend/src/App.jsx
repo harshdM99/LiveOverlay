@@ -19,6 +19,8 @@ function App() {
   const [isTextOverlayEnabled, setIsTextOverlayEnabled] = useState(false); // ✅ Toggle for text overlay
   const [cameraDenied, setCameraDenied] = useState(false); // ✅ Track camera access
 
+  const accountId = localStorage.getItem("selectedTwitchAccount");
+
   const socket = io("http://localhost:3000");
 
   useEffect(() => {
@@ -231,7 +233,7 @@ function App() {
     });
 
     recorder.ondataavailable = (event) => {
-      socket.emit("binaryStream", event.data);
+      socket.emit("binaryStream", accountId, event.data);
     };
 
     recorder.start(25);
@@ -240,7 +242,7 @@ function App() {
     console.log("Streaming started...");
 
     // Request Twitch URL from backend
-    socket.emit("startStream");
+    socket.emit("startStream", accountId);
 
     // Listen for the Twitch URL
     socket.on("twitchUrl", (url) => {
@@ -252,6 +254,7 @@ function App() {
     if (mediaRecorderRef.current) {
       mediaRecorderRef.current.stop();
       setTwitchUrl(null); // ✅ Hide the Twitch URL after stopping
+      socket.emit("stopStream", accountId);
       console.log("Streaming stopped...");
     }
   };

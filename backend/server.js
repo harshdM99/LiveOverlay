@@ -141,7 +141,7 @@ app.post("/logout", authenticateUser, (req, res) => {
 });
 
 // ✅ Protect App Route (Ensures Only Logged-In Users Can Access)
-app.get("/verify-session", authenticateUser, (req, res) => {
+app.get("/verify-session", (req, res) => {
   // return res.json({ success: true, username: req.user.username });
 
   console.log("Cookies received:", req.cookies); // ✅ Log cookies

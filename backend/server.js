@@ -109,6 +109,7 @@ app.post("/login", (req, res) => {
     res.cookie("jwt", token, {
       httpOnly: true, // ✅ More secure, can't be accessed by JavaScript
       secure: true, // Change to `true` if using HTTPS
+      sameSite: "None",
       maxAge: 60 * 60 * 1000, // 1 hours
     });
 

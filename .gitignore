@@ -1,5 +1,6 @@
 # Temprary files
 OLD-frontend
+*.drawio
 
 # Node modules (dependencies)
 node_modules/

@@ -35,13 +35,13 @@ The application is designed for **real-time, multi-user streaming**, with dynami
 
 ## Features
 
-- ** Real-time streaming to Twitch via RTMP protocol**
-- ** Multi-user architecture:** spawn isolated FFmpeg processes per user
-- ** Dynamic overlays:** add image and text overlays to live streams
-- ** Webcam and screen sharing integration**
-- ** JWT-based authentication with session management**
-- ** User-friendly interface with live preview and easy source switching**
-- ** Deployed fully on Render:** frontend and backend hosted with free services
+- **Real-time streaming to Twitch via RTMP protocol**
+- **Multi-user architecture:** spawn isolated FFmpeg processes per user
+- **Dynamic overlays:** add image and text overlays to live streams
+- **Webcam and screen sharing integration**
+- **JWT-based authentication with session management**
+- **User-friendly interface with live preview and easy source switching**
+- **Deployed fully on Render:** frontend and backend hosted with free services
 
 ## Tech Stack
 

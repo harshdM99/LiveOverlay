@@ -1,11 +1,11 @@
-# LiveOverlay 🎥
+# LiveOverlay
 
 LiveOverlay is a full-stack live streaming application that enables users to stream to Twitch directly from their browser.  
 It supports multiple concurrent users, each with their own Twitch accounts, and allows dynamic control over stream sources and overlays.
 
 The application is designed for **real-time, multi-user streaming**, with dynamic video overlays and seamless integration between frontend and backend services.
 
-## 🏗️ Architecture
+## Architecture
 
 ![Architecture diagram](./architecture.png)
 
@@ -33,17 +33,17 @@ The application is designed for **real-time, multi-user streaming**, with dynami
    - Both frontend and backend are hosted on **Render** (free tier).
    - CI/CD handled via **GitHub Actions** for automatic deployments.
 
-## ✨ Features
+## Features
 
-- **🎥 Real-time streaming to Twitch via RTMP protocol**
-- **👥 Multi-user architecture:** spawn isolated FFmpeg processes per user
-- **🖼️ Dynamic overlays:** add image and text overlays to live streams
-- **🖥️ Webcam and screen sharing integration**
-- **🔒 JWT-based authentication with session management**
-- **⚙️ User-friendly interface with live preview and easy source switching**
-- **🚀 Deployed fully on Render:** frontend and backend hosted with free services
+- ** Real-time streaming to Twitch via RTMP protocol**
+- ** Multi-user architecture:** spawn isolated FFmpeg processes per user
+- ** Dynamic overlays:** add image and text overlays to live streams
+- ** Webcam and screen sharing integration**
+- ** JWT-based authentication with session management**
+- ** User-friendly interface with live preview and easy source switching**
+- ** Deployed fully on Render:** frontend and backend hosted with free services
 
-## ⚙️ Tech Stack
+## Tech Stack
 
 - **Frontend:** React, Vite, Tailwind CSS
 - **Backend:** Node.js, Express.js, Socket.io
